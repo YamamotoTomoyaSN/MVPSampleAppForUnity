@@ -33,9 +33,12 @@ namespace Home {
 			StartCoroutine(m_Model.GetPoketMonsterDataAPI(id.ToString(), OnCompletedGetPoketMonsterData));
 		}
 
-		private void OnCompletedGetPoketMonsterData(Texture2D texture) {
+		private void OnCompletedGetPoketMonsterData(Texture2D texture, string name) {
 			// Viewにポケモンテクスチャを表示依頼
 			m_View.SetPokemonImage(texture);
+
+			// Viewにポケモン名を表示依頼
+			m_View.SetPokemonName(name);
 		}
 	}
 }

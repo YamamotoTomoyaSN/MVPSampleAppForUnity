@@ -9,6 +9,9 @@ namespace Home {
 		private RawImage m_PokemonImange = null;
 
 		[SerializeField]
+		private TMP_Text m_PokemonName = null;
+
+		[SerializeField]
 		private TMP_InputField m_PokemonIdInputField = null;
 
 		[SerializeField]
@@ -36,6 +39,10 @@ namespace Home {
 
 		public void SetPokemonImage(Texture2D texture) {
 			m_PokemonImange.texture = texture;
+		}
+
+		public void SetPokemonName(string name) {
+			m_PokemonName.text = name;
 		}
 	}
 }
