@@ -57,9 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Home\HomeModel.cs" />
+    <Compile Include="Assets\Scripts\Common\PokemonResponseData.cs" />
     <Compile Include="Assets\Scripts\Home\HomeView.cs" />
     <Compile Include="Assets\Scripts\Home\HomePresenter.cs" />
-    <Compile Include="Assets\Scripts\Common\PokemonResponseData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

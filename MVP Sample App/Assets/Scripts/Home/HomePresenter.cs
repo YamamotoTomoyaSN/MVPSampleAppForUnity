@@ -29,15 +29,15 @@ namespace Home {
 				return;
 			}
 			Debug.Log("Search pokemon id:" + id);
-			// Modelにポケモン情報を取得依頼をする
+			// Modelにポケモン情報の取得依頼をする
 			StartCoroutine(m_Model.GetPoketMonsterDataAPI(id.ToString(), OnCompletedGetPoketMonsterData));
 		}
 
 		private void OnCompletedGetPoketMonsterData(Texture2D texture, string name) {
-			// Viewにポケモンテクスチャを表示依頼
+			// Viewにポケモンテクスチャの表示依頼
 			m_View.SetPokemonImage(texture);
 
-			// Viewにポケモン名を表示依頼
+			// Viewにポケモン名の表示依頼
 			m_View.SetPokemonName(name);
 		}
 	}
