@@ -15,40 +15,42 @@ namespace Home {
 
 		private IHomeEventDelegate m_EventDelegate;
 
-		/**
-		 * Presenter側でViewの初期化処理が呼び出される
-		 */
+		/// <summary>
+		/// Presenter側でViewの初期化処理が呼び出される
+		/// </summary>
 		public override void Init() {
 			m_SearchButton.onClick.AddListener(OnSearchButton);
 		}
 
-		/**
-		 * Presenter側でEventDelegateの登録処理が呼び出される
-		 */
+		/// <summary>
+		/// Presenter側でEventDelegateの登録処理が呼び出される
+		/// </summary>
+		/// <param name="eventDelegate">Presenterに処理を依頼するためのインターフェース</param>
 		public override void SetEventDelegate(IHomeEventDelegate eventDelegate) {
-			// Presenterに処理を依頼するためのインターフェースを変数に格納
 			m_EventDelegate = eventDelegate;
 		}
 
-		/**
-		 * 検索ボタンイベントハンドラー
-		 */
+		/// <summary>
+		/// 検索ボタンのイベントハンドラー
+		/// </summary>
 		private void OnSearchButton() {
 			string idText = m_PokemonIdInputField.text;
 			// Presenterにポケモン情報の取得依頼
 			m_EventDelegate.GetPoketMonsterData(idText);
 		}
 
-		/**
-		 * ポケモン画像表示
-		 */
+		/// <summary>
+		/// ポケモン画像表示
+		/// </summary>
+		/// <param name="texture">ポケモン画像</param>
 		public void SetPokemonImage(Texture2D texture) {
 			m_PokemonImange.texture = texture;
 		}
 
-		/**
-		 * ポケモン名表示
-		 */
+		/// <summary>
+		/// ポケモン名表示
+		/// </summary>
+		/// <param name="name">ポケモン名</param>
 		public void SetPokemonName(string name) {
 			m_PokemonName.text = name;
 		}

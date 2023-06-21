@@ -7,58 +7,77 @@ using static ResponseData.PokemonResponseData;
 namespace Home {
 	public class HomeModel : MonoBehaviour {
 
-		private const string BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+		private const string GET_POKEMON_DATA_API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+		private const string GET_POKEMON_IMAGE_API_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{0}.png";
 
-		/**
-		 * ポケモン情報取得APIリクエスト
-		 */
+		/// <summary>
+		/// ポケモン情報を取得するAPI通信
+		/// </summary>
+		/// <param name="id">ポケモンID</param>
+		/// <param name="callback">ポケモン画像と名前を返却</param>
+		/// <returns></returns>
 		public IEnumerator GetPoketMonsterDataAPI(string id, Action<Texture2D, String> callback) {
-			using UnityWebRequest request = UnityWebRequest.Get(BASE_URL + id);
-			Debug.Log("Request URL:" + request.url);
+			using UnityWebRequest request = UnityWebRequest.Get(GET_POKEMON_DATA_API_BASE_URL + id);
 
-			// ポケモンAPIリクエスト
+			// ポケモン情報取得APIリクエスト
 			yield return request.SendWebRequest();
 
 			if (request.result == UnityWebRequest.Result.Success) {
 				// 成功時
 				GetPokemonAPIResponseData data = JsonUtility.FromJson<GetPokemonAPIResponseData>(request.downloadHandler.text); // 文字列からJsonを取得
 
-				// 画像を取得する
-				StartCoroutine(GetPokemonTexture(data.sprites.front_default, (texture) => {
-					StartCoroutine(GetPokemonName(data.species.url, (name) => {
-						// テクスチャと名前をコールバック
-						callback(texture, name);
-					}));
+				// ポケモン画像を取得する
+				StartCoroutine(GetPokemonTexture(id, (texture) => {
+					if (texture) {
+						// 成功時、ポケモン名を取得する
+						StartCoroutine(GetPokemonName(data.species.url, (name) => {
+							// ポケモン画像と名前をコールバック
+							callback(texture, name);
+						}));
+					} else {
+						// エラー時
+						callback(null, null);
+					}
 				}));
 			} else {
 				// エラー時
 				ErrorProcess(request);
+				callback(null, null);
 			}
 		}
 
-		/**
-		 * ポケモン画像を取得
-		 */
-		private IEnumerator GetPokemonTexture(string url, Action<Texture2D> callback) {
+		/// <summary>
+		/// ポケモン画像を取得
+		/// </summary>
+		/// <param name="id">ポケモンID</param>
+		/// <param name="callback">ポケモン画像を返却</param>
+		/// <returns></returns>
+		private IEnumerator GetPokemonTexture(string id, Action<Texture2D> callback) {
+			string url = string.Format(GET_POKEMON_IMAGE_API_BASE_URL, id);
 			Uri uri = new(url);
 
 			using UnityWebRequest request = UnityWebRequestTexture.GetTexture(uri);
 
+			// ポケモン画像取得APIリクエスト
 			yield return request.SendWebRequest();
 
 			if (request.result == UnityWebRequest.Result.Success) {
-				// 成功時、画像のテクスチャを返す
+				// 成功時、ポケモン画像のテクスチャを返却
 				var texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
 				callback.Invoke(texture);
 			} else {
 				// エラー時
 				ErrorProcess(request);
+				callback(null);
 			}
 		}
 
-		/**
-		 * ポケモン名を取得
-		 */
+		/// <summary>
+		/// ポケモン名を取得
+		/// </summary>
+		/// <param name="url">ポケモン名取得APIのURL</param>
+		/// <param name="callback">ポケモン名を返却</param>
+		/// <returns></returns>
 		private IEnumerator GetPokemonName(string url, Action<string> callback) {
 			using UnityWebRequest request = UnityWebRequest.Get(url);
 
@@ -72,17 +91,19 @@ namespace Home {
 				// 日本語のポケモン名を取得する
 				GetPokemonNameAPIResponseData.Names name = data.names.Find((value) => value.language.name == "ja");
 
-				// ポケモン名をコールバック
+				// ポケモン名を返却
 				callback(name.name);
 			} else {
 				// エラー時
 				ErrorProcess(request);
+				callback(null);
 			}
 		}
 
-		/**
-		 * エラー処理
-		 */
+		/// <summary>
+		/// エラー処理
+		/// </summary>
+		/// <param name="request">リクエスト情報</param>
 		private void ErrorProcess(UnityWebRequest request) {
 			switch (request.result) {
 				case UnityWebRequest.Result.InProgress:

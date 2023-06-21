@@ -4,6 +4,9 @@ using System.Collections.Generic;
 namespace ResponseData {
 	public class PokemonResponseData {
 
+		/**
+		 * ポケモン情報取得APIのレスポンスからデータを取得する用の構造体
+		 */
 		[Serializable]
 		public struct GetPokemonAPIResponseData {
 
@@ -12,15 +15,18 @@ namespace ResponseData {
 
 			[Serializable]
 			public struct Sprites {
-				public string front_default;
+				public string front_default; // ポケモンのミニ画像取得用のURL(このアプリでは不使用)
 			}
 
 			[Serializable]
 			public struct Species {
-				public string url;
+				public string url; // ポケモン名取得用のURL
 			}
 		}
 
+		/**
+		 * ポケモン名取得APIのレスポンスからデータを取得する用の構造体
+		 */
 		[Serializable]
 		public struct GetPokemonNameAPIResponseData {
 
@@ -28,13 +34,13 @@ namespace ResponseData {
 
 			[Serializable]
 			public struct Names {
-				public Language language;
-				public string name;
+				public Language language; // 名前の言語
+				public string name; // ポケモン名(言語によって変わる)
 			}
 
 			[Serializable]
 			public struct Language {
-				public string name;
+				public string name; // 言語の名前(例：ja)
 			}
 		}
 	}
