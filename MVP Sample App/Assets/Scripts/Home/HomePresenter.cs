@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Home {
 
 	public interface IHomeEventDelegate {
-		void GetPoketMonsterData(string idText);
+		void GetPokemonData(string idText);
 	}
 
 	public abstract class HomePresenterView : MonoBehaviour {
@@ -29,14 +29,14 @@ namespace Home {
 		/// ポケモン情報取得
 		/// </summary>
 		/// <param name="idText">ポケモンIDのテキスト</param>
-		public void GetPoketMonsterData(string idText) {
+		public void GetPokemonData(string idText) {
 			if (!int.TryParse(idText, out int id)) {
 				// 入力した内容がint(ID)に変換できなかった場合
 				return;
 			}
 			Debug.Log("Search pokemon id:" + id);
 			// Modelにポケモン情報の取得依頼をする
-			StartCoroutine(m_Model.GetPoketMonsterDataAPI(id.ToString(), OnCompletedGetPoketMonsterData));
+			StartCoroutine(m_Model.GetPokemonData(id.ToString(), OnCompletedGetPokemonData));
 		}
 
 		/// <summary>
@@ -44,13 +44,13 @@ namespace Home {
 		/// </summary>
 		/// <param name="texture">ポケモン画像</param>
 		/// <param name="name">ポケモン名</param>
-		private void OnCompletedGetPoketMonsterData(Texture2D texture, string name) {
+		private void OnCompletedGetPokemonData(Texture2D texture, string name) {
 			if (texture == null || name == null) {
 				// ポケモン情報取得失敗時、何もしない
+				Debug.Log("Error: Get pokemon data");
 				return;
 			}
-
-			Debug.Log("aaaaa texture width:" + texture.width + " height:" + texture.height);
+			Debug.Log("Success: Get pokemon data:" + name);
 
 			// Viewにポケモン画像の表示依頼
 			m_View.SetPokemonImage(texture);

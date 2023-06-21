@@ -7,7 +7,11 @@ using static ResponseData.PokemonResponseData;
 namespace Home {
 	public class HomeModel : MonoBehaviour {
 
-		private const string GET_POKEMON_DATA_API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+		// ポケモン情報取得APIのURL
+		private const string GET_POKEMON_DATA_API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/{0}";
+
+		// ポケモン画像取得APIのURL
+		// (基本的にはポケモン情報取得APIのレスポンスから取得するURLだが、ハイフンの構造体が作成できないので直書きのURLとポケモンIDでURLを生成する)
 		private const string GET_POKEMON_IMAGE_API_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{0}.png";
 
 		/// <summary>
@@ -16,15 +20,17 @@ namespace Home {
 		/// <param name="id">ポケモンID</param>
 		/// <param name="callback">ポケモン画像と名前を返却</param>
 		/// <returns></returns>
-		public IEnumerator GetPoketMonsterDataAPI(string id, Action<Texture2D, String> callback) {
-			using UnityWebRequest request = UnityWebRequest.Get(GET_POKEMON_DATA_API_BASE_URL + id);
+		public IEnumerator GetPokemonData(string id, Action<Texture2D, String> callback) {
+			string url = string.Format(GET_POKEMON_DATA_API_BASE_URL, id);
+
+			using UnityWebRequest request = UnityWebRequest.Get(url);
 
 			// ポケモン情報取得APIリクエスト
 			yield return request.SendWebRequest();
 
 			if (request.result == UnityWebRequest.Result.Success) {
-				// 成功時
-				GetPokemonAPIResponseData data = JsonUtility.FromJson<GetPokemonAPIResponseData>(request.downloadHandler.text); // 文字列からJsonを取得
+				// 成功時、レスポンスの文字列からJsonを取得
+				GetPokemonAPIResponseData data = JsonUtility.FromJson<GetPokemonAPIResponseData>(request.downloadHandler.text);
 
 				// ポケモン画像を取得する
 				StartCoroutine(GetPokemonTexture(id, (texture) => {
@@ -41,13 +47,13 @@ namespace Home {
 				}));
 			} else {
 				// エラー時
-				ErrorProcess(request);
+				ErrorProcess(request, "GetPokemonData API");
 				callback(null, null);
 			}
 		}
 
 		/// <summary>
-		/// ポケモン画像を取得
+		/// ポケモン画像を取得するAPI通信
 		/// </summary>
 		/// <param name="id">ポケモンID</param>
 		/// <param name="callback">ポケモン画像を返却</param>
@@ -67,13 +73,13 @@ namespace Home {
 				callback.Invoke(texture);
 			} else {
 				// エラー時
-				ErrorProcess(request);
+				ErrorProcess(request, "GetPokemonTexture API");
 				callback(null);
 			}
 		}
 
 		/// <summary>
-		/// ポケモン名を取得
+		/// ポケモン名を取得するAPI通信
 		/// </summary>
 		/// <param name="url">ポケモン名取得APIのURL</param>
 		/// <param name="callback">ポケモン名を返却</param>
@@ -85,8 +91,8 @@ namespace Home {
 			yield return request.SendWebRequest();
 
 			if (request.result == UnityWebRequest.Result.Success) {
-				// 成功時
-				GetPokemonNameAPIResponseData data = JsonUtility.FromJson<GetPokemonNameAPIResponseData>(request.downloadHandler.text); // 文字列からJsonを取得
+				// 成功時、レスポンスの文字列からJsonを取得
+				GetPokemonNameAPIResponseData data = JsonUtility.FromJson<GetPokemonNameAPIResponseData>(request.downloadHandler.text);
 
 				// 日本語のポケモン名を取得する
 				GetPokemonNameAPIResponseData.Names name = data.names.Find((value) => value.language.name == "ja");
@@ -95,7 +101,7 @@ namespace Home {
 				callback(name.name);
 			} else {
 				// エラー時
-				ErrorProcess(request);
+				ErrorProcess(request, "GetPokemonName API");
 				callback(null);
 			}
 		}
@@ -104,20 +110,20 @@ namespace Home {
 		/// エラー処理
 		/// </summary>
 		/// <param name="request">リクエスト情報</param>
-		private void ErrorProcess(UnityWebRequest request) {
+		private void ErrorProcess(UnityWebRequest request, string apiName) {
 			switch (request.result) {
 				case UnityWebRequest.Result.InProgress:
 					// リクエスト中
-					Debug.Log("InProgress");
+					Debug.Log(apiName + ": InProgress");
 					break;
 				case UnityWebRequest.Result.ProtocolError:
-					Debug.Log("ProtocolError:" + request.error);
+					Debug.Log(apiName + ": ProtocolError:" + request.error);
 					break;
 				case UnityWebRequest.Result.DataProcessingError:
-					Debug.Log("DataProcessingError:" + request.error);
+					Debug.Log(apiName + ": DataProcessingError:" + request.error);
 					break;
 				case UnityWebRequest.Result.ConnectionError:
-					Debug.Log("ConnectionError:" + request.error);
+					Debug.Log(apiName + ": ConnectionError:" + request.error);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
