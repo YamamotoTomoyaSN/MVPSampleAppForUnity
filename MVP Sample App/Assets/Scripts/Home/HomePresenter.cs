@@ -3,14 +3,14 @@ using UnityEngine;
 namespace Home {
 	// HomeViewからHomePresenterに依頼する処理のインターフェース
 	public interface IHomeEventDelegate {
-		void GetPokemonData(string idText); // ポケモン情報取得依頼用クラス
+		void GetPokemonData(string idText); // ポケモン情報取得依頼用メソッド
 	}
 
 	// HomeViewで継承する抽象クラス
 	public abstract class HomePresenterView : MonoBehaviour {
 		// HomeViewの初期化用の抽象メソッド
 		public abstract void Init();
-		// HomeViewにインターフェースを引継ぎする抽象クラス
+		// HomeViewにインターフェースを引継ぎする抽象メソッド
 		public abstract void SetEventDelegate(IHomeEventDelegate eventDelegate);
 	}
 
